@@ -16,7 +16,7 @@ jobs:
       - name: Zip plugin
         run: |
           cd ..
-          zip -r trafficontent.zip trafficontent-wp -x "*.git*" "*.DS_Store"
+          zip -r trafficontent.zip trafficontent-wp -x "*.git*" "*.DS_Store" "trafficontent-wp/includes/plugin-update-checker/*"
 
       - name: Upload Release ZIP
         uses: softprops/action-gh-release@v1

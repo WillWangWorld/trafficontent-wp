@@ -1,16 +1,27 @@
 <?php
-/*
-Plugin Name: Trafficontent
-Plugin URI: https://github.com/WillWangWorld/trafficontent-wp
-GitHub Plugin URI: https://github.com/WillWangWorld/trafficontent-wp
-Description: Automatically connect your WordPress site to Trafficontent to generate AI blog posts.
-Version: 1.0.1
-Author: George Wang
-Author URI: https://trafficontent.com
-License: GPL2
-Requires at least: 5.0
-Tested up to: 6.5
-*/
+/**
+ * Plugin Name: Trafficontent
+ * Plugin URI: https://github.com/WillWangWorld/trafficontent-wp
+ * Description: Automatically connect your WordPress site to Trafficontent to generate AI blog posts.
+ * Version: 1.0.2
+ * Author: George Wang
+ * Author URI: https://trafficontent.com
+ * License: GPL2
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Requires at least: 5.0
+ * Tested up to: 6.5
+ * GitHub Plugin URI: https://github.com/WillWangWorld/trafficontent-wp
+ * Update URI: https://github.com/WillWangWorld/trafficontent-wp
+ */
+
+// Plugin Update Checker
+require plugin_dir_path(__FILE__) . 'includes/plugin-update-checker/plugin-update-checker.php';
+
+$myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
+    'https://github.com/WillWangWorld/trafficontent-wp/',
+    __FILE__,
+    'trafficontent'
+);
 
 if (!defined('ABSPATH')) exit;
 
