@@ -1,4 +1,3 @@
-
 <?php
 add_action('admin_init', function () {
     if (!current_user_can('manage_options')) return;

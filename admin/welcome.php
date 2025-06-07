@@ -1,7 +1,7 @@
 <?php
 add_action('admin_menu', function () {
     add_submenu_page(
-        null, // No parent slug, hidden from menu
+        'trafficontent-settings', // Show under main Trafficontent menu
         'Trafficontent Welcome',
         'Trafficontent Welcome',
         'manage_options',

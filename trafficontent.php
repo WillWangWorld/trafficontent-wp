@@ -1,12 +1,15 @@
 <?php
 /*
 Plugin Name: Trafficontent
-Plugin URI: https://trafficontent.com
+Plugin URI: https://github.com/WillWangWorld/trafficontent-wp
+GitHub Plugin URI: https://github.com/WillWangWorld/trafficontent-wp
 Description: Automatically connect your WordPress site to Trafficontent to generate AI blog posts.
-Version: 1.0.0
+Version: 1.0.1
 Author: George Wang
 Author URI: https://trafficontent.com
 License: GPL2
+Requires at least: 5.0
+Tested up to: 6.5
 */
 
 if (!defined('ABSPATH')) exit;

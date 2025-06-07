@@ -1,0 +1,26 @@
+name: Build and Upload Plugin Zip
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Zip plugin
+        run: |
+          cd ..
+          zip -r trafficontent.zip trafficontent-wp -x "*.git*" "*.DS_Store"
+
+      - name: Upload Release ZIP
+        uses: softprops/action-gh-release@v1
+        with:
+          files: trafficontent.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
