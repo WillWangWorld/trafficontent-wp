@@ -19,20 +19,17 @@ function trafficontent_welcome_page() {
         <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 40px; margin-bottom: 40px;">
             <div style="flex: 1 1 200px;">
                 <span class="dashicons dashicons-groups" style="font-size: 40px; color: #3B82F6;"></span>
-                <p style="margin-top: 10px;">We work together as a friendly,<br />supportive team</p>
+                <p style="margin-top: 20px;">We work together as a friendly,<br />supportive team</p>
             </div>
             <div style="flex: 1 1 200px;">
                 <span class="dashicons dashicons-lightbulb" style="font-size: 40px; color: #3B82F6;"></span>
-                <p style="margin-top: 10px;">We strive to find the best solution,<br />not the easy one</p>
+                <p style="margin-top: 20px;">We strive to find the best solution,<br />not the easy one</p>
             </div>
             <div style="flex: 1 1 200px;">
                 <span class="dashicons dashicons-visibility" style="font-size: 40px; color: #3B82F6;"></span>
-                <p style="margin-top: 10px;">We go the extra mile to deliver work<br />we're proud of</p>
+                <p style="margin-top: 20px;">We go the extra mile to deliver work<br />we're proud of</p>
             </div>
-            <div style="flex: 1 1 200px;">
-                <span class="dashicons dashicons-heart" style="font-size: 40px; color: #3B82F6;"></span>
-                <p style="margin-top: 10px;">We put our customers at the heart<br />of everything we do</p>
-            </div>
+           
         </div>
 
         <a href="#" class="button button-primary" style="padding: 10px 24px; font-size: 15px;">See Open Positions</a>

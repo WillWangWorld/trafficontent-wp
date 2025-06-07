@@ -2,6 +2,7 @@
 /**
  * Plugin Name: Trafficontent
  * Plugin URI: https://github.com/WillWangWorld/trafficontent-wp
+ * Text Domain: trafficontent
  * Description: Automatically connect your WordPress site to Trafficontent to generate AI blog posts.
  * Version: 1.0.2
  * Author: George Wang
@@ -14,21 +15,21 @@
  * Update URI: https://github.com/WillWangWorld/trafficontent-wp
  */
 
-// Plugin Update Checker
-require plugin_dir_path(__FILE__) . 'includes/plugin-update-checker/plugin-update-checker.php';
-
-$myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
-    'https://github.com/WillWangWorld/trafficontent-wp/',
-    __FILE__,
-    'trafficontent'
-);
-
+// Ensure WordPress context
 if (!defined('ABSPATH')) exit;
 
-// Include admin pages
+// Optionally include plugin update checker if available
+// require plugin_dir_path(__FILE__) . 'includes/plugin-update-checker/plugin-update-checker.php';
+// $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
+//     'https://github.com/WillWangWorld/trafficontent-wp/',
+//     __FILE__,
+//     'trafficontent'
+// );
+
+// Include admin pages first
 require_once plugin_dir_path(__FILE__) . 'admin/settings.php'; 
 require_once plugin_dir_path(__FILE__) . 'admin/enqueue.php';
-
+require_once plugin_dir_path(__FILE__) . 'admin/welcome.php';
 
 // Plugin activation hook
 register_activation_hook(__FILE__, function() {
@@ -36,10 +37,6 @@ register_activation_hook(__FILE__, function() {
     add_option('trafficontent_channel_id', '');
     set_transient('_trafficontent_activation_redirect', true, 30);
 });
-
- 
-// Ensure admin settings and welcome pages load properly
-include_once plugin_dir_path(__FILE__) . 'admin/welcome.php';
 
 // Redirect to welcome page ONCE after activation if no token is set
 add_action('admin_init', function () {
