@@ -6,7 +6,7 @@ function trafficontent_admin_menu() {
         'manage_options',
         'trafficontent-dashboard',
         'trafficontent_settings_page',
-        plugins_url('assets/logo.png', __FILE__),
+        plugin_dir_url(dirname(__FILE__)) . 'assets/logo.png',        
         80
     );
  

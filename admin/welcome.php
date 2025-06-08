@@ -38,6 +38,27 @@ function trafficontent_welcome_page() {
                     Save time, save money, schedule and automate your blog publishing workflow without ever leaving your WordPress dashboard.
                 </p>
             </div>
+            <div style="flex: 1 1 200px;">
+                <span class="dashicons dashicons-groups" style="font-size: 40px; color: #3B82F6;"></span>
+                <h3 style="font-size: 18px; color: #1d4ed8; margin-bottom: 10px;">Organic Traffic</h3>
+                <p style="margin: 0 auto; max-width: 250px; line-height: 1.5;">
+                Did you know that organic traffic is the most cost-effective growth channel?
+                </p>
+            </div>
+            <div style="flex: 1 1 200px;">
+                <span class="dashicons dashicons-lightbulb" style="font-size: 40px; color: #3B82F6;"></span>
+                <h3 style="font-size: 18px; color: #1d4ed8; margin-bottom: 10px;">Your Content Engine</h3>
+                <p style="margin: 0 auto; max-width: 250px; line-height: 1.5;">
+                   Research and explore the topic to craft engaging, relevant, and SEO-friendly content tailored to your audience.
+                </p>
+            </div>
+            <div style="flex: 1 1 200px;">
+                <span class="dashicons dashicons-visibility" style="font-size: 40px; color: #3B82F6;"></span>
+                <h3 style="font-size: 18px; color: #1d4ed8; margin-bottom: 10px;">Seamless Scheduling</h3>
+                <p style="margin: 0 auto; max-width: 250px; line-height: 1.5;">
+                    Save time, save money, schedule and automate your blog publishing workflow without ever leaving your WordPress dashboard.
+                </p>
+            </div>
            
         </div>
 
@@ -73,7 +94,7 @@ function trafficontent_welcome_page() {
     </div>
 
     <div style="max-width: 900px; margin: 30px auto;">
-        <img src="<?php echo plugins_url('assets/calendar.png', __FILE__); ?>" alt="Calendar Demo" style="width: 100%; max-width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
+        <img src="<?php echo plugins_url('../assets/calendar.png', __FILE__); ?>" alt="Calendar Demo" style="width: 100%; max-width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
     </div>
     <script>
         document.getElementById('trafficontent-connect-form').addEventListener('submit', function(e) {
