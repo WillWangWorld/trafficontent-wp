@@ -1,15 +1,14 @@
 <?php
 function trafficontent_admin_menu() {
     add_menu_page(
-        'Trafficontent',
+        'Trafficontent AutoPoster',
         'Trafficontent',
         'manage_options',
-        'trafficontent-dashboard',
+        'trafficontent-settings',
         'trafficontent_settings_page',
-        plugins_url('assets/logo.png', __FILE__),
+        'dashicons-edit',
         80
     );
- 
 }
 add_action('admin_menu', 'trafficontent_admin_menu');
 

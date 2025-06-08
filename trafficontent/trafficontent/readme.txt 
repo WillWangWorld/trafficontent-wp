@@ -1,0 +1,26 @@
+=== Trafficontent AutoPoster ===
+Contributors: trafficontent
+Tags: blog, ai, automation, shopify, wordpress
+Requires at least: 5.0
+Tested up to: 6.5
+Stable tag: 1.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+AI blog writer and auto-poster that connects to trafficontent.com to generate and post blogs automatically.
+
+== Description ==
+Trafficontent AutoPoster connects your site with Trafficontent's AI engine. Once connected, your dashboard appears right inside WP Admin.
+
+== Installation ==
+1. Upload plugin.
+2. Activate.
+3. Visit the "Trafficontent" menu.
+4. Follow setup or use auto-generated token.
+
+== Screenshots ==
+1. Embedded dashboard view
+
+== Changelog ==
+= 1.0 =
+Initial release.
