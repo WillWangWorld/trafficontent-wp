@@ -24,3 +24,27 @@ function trafficontent_settings_page() {
     </div>
     <?php
 }
+
+// Add Channels submenu page
+add_action('admin_menu', function () {
+    add_submenu_page(
+        'trafficontent-dashboard',
+        'Channels',
+        'Channels',
+        'manage_options',
+        'trafficontent-channels',
+        'trafficontent_channels_page'
+    );
+});
+
+function trafficontent_channels_page() {
+    ?>
+    <div class="wrap">
+        <h1>Trafficontent Channels</h1>
+        <iframe
+            src="https://trafficontent.com/creator/settings/"
+            style="width:100%; height:90vh; border:none;"
+        ></iframe>
+    </div>
+    <?php
+}
