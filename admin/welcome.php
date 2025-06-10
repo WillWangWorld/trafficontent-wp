@@ -13,6 +13,11 @@ add_action('admin_menu', function () {
 });
 
 function trafficontent_welcome_page() {
+    // Optional: manual force cleanup via URL
+    if (isset($_GET['force_disconnect']) && current_user_can('manage_options')) {
+        delete_option('trafficontent_channel_id');
+        delete_option('trafficontent_consent_given');
+    }
     ?>
     <div class="wrap" style="max-width: 900px; margin: 50px auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; text-align: center;">
         <p style="color: #3B82F6; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">Welcome to Trafficontent</p>
@@ -26,18 +31,32 @@ function trafficontent_welcome_page() {
                     <input type="checkbox" name="trafficontent_agree" id="trafficontent_agree" style="margin-right: 10px;" required />
                     I consent to connect this site and share my admin email with Trafficontent.
                 </label>
-                <button id="trafficontent-connect-btn" type="submit" class="button button-primary" style="margin-top: 20px; padding: 15px 40px; font-size: 16px; border-radius: 8px; background-color: #805AF5; color: #fff; border: none; transition: all 0.3s ease; transform: scale(1);"
-                    onmouseover="this.style.backgroundColor='#6c45e0'; this.style.transform='scale(1.05)';"
-                    onmouseout="this.style.backgroundColor='#805AF5'; this.style.transform='scale(1)';"
-                    onmousedown="this.style.transform='scale(0.98)';"
-                    onmouseup="this.style.transform='scale(1.05)';">
-                    <span class="dashicons dashicons-yes-alt" style="vertical-align: middle; margin-right: 6px; color: #fff;"></span>
-                    <span class="btn-text">Connect Trafficontent</span>
-                    <span class="spinner" style="display: none; margin-left: 10px; vertical-align: middle;"></span>
-                </button>
+                <?php if (get_option('trafficontent_channel_id')): ?>
+                    <button id="trafficontent-connect-btn" type="submit" class="button button-secondary" style="margin-top: 20px; padding: 15px 40px; font-size: 16px; border-radius: 8px; background-color: #ccc; color: #333; border: none; transition: all 0.3s ease; transform: scale(1);"
+                        onmouseover="this.style.backgroundColor='#bbb'; this.style.transform='scale(1.05)';"
+                        onmouseout="this.style.backgroundColor='#ccc'; this.style.transform='scale(1)';"
+                        onmousedown="this.style.transform='scale(0.98)';"
+                        onmouseup="this.style.transform='scale(1.05)';">
+                        <span class="dashicons dashicons-update" style="vertical-align: middle; margin-right: 6px;"></span>
+                        <span class="btn-text">Reconnect Trafficontent</span>
+                        <span class="spinner" style="display: none; margin-left: 10px; vertical-align: middle;"></span>
+                    </button>
+                <?php else: ?>
+                    <button id="trafficontent-connect-btn" type="submit" class="button button-primary" style="margin-top: 20px; padding: 15px 40px; font-size: 16px; border-radius: 8px; background-color: #805AF5; color: #fff; border: none; transition: all 0.3s ease; transform: scale(1);"
+                        onmouseover="this.style.backgroundColor='#6c45e0'; this.style.transform='scale(1.05)';"
+                        onmouseout="this.style.backgroundColor='#805AF5'; this.style.transform='scale(1)';"
+                        onmousedown="this.style.transform='scale(0.98)';"
+                        onmouseup="this.style.transform='scale(1.05)';">
+                        <span class="dashicons dashicons-yes-alt" style="vertical-align: middle; margin-right: 6px; color: #fff;"></span>
+                        <span class="btn-text">Connect Trafficontent</span>
+                        <span class="spinner" style="display: none; margin-left: 10px; vertical-align: middle;"></span>
+                    </button>
+                <?php endif; ?>
 
                 <?php if (get_option('trafficontent_channel_id')): ?>
                     <div class="trafficontent-success-message">🎉 Site successfully connected to Trafficontent!</div>
+                <?php else: ?>
+                    <div class="trafficontent-success-message" style="display:none;"></div>
                 <?php endif; ?>
 
             </form>
@@ -192,7 +211,33 @@ function trafficontent_welcome_page() {
     <script>
     window.addEventListener("message", function(event) {
         if (event.data?.type === "CHANNEL_CREATED") {
-            window.location.reload();
+            // Force refresh of parent frame and navigation menu
+            if (window.top !== window.self) {
+                window.top.location.href = '<?php echo admin_url('admin.php?page=trafficontent-channels'); ?>';
+            } else {
+                location.reload();
+            }
+        }
+    });
+    // UI reset if channel_id missing (after forced disconnect or reactivation)
+    document.addEventListener('DOMContentLoaded', () => {
+        const channelId = <?php echo json_encode(get_option('trafficontent_channel_id')); ?>;
+        const button = document.getElementById('trafficontent-connect-btn');
+        const message = document.querySelector('.trafficontent-success-message');
+
+        if (!channelId && button) {
+            // Reset button to original "Connect" style
+            button.innerHTML = `
+                <span class="dashicons dashicons-yes-alt" style="vertical-align: middle; margin-right: 6px; color: #fff;"></span>
+                <span class="btn-text">Connect Trafficontent</span>
+                <span class="spinner" style="display: none; margin-left: 10px; vertical-align: middle;"></span>
+            `;
+            button.className = "button button-primary";
+            button.style.backgroundColor = "#805AF5";
+            button.disabled = false;
+            button.style.opacity = "1";
+            // Hide message
+            if (message) message.style.display = "none";
         }
     });
     </script>
@@ -228,5 +273,31 @@ add_action('admin_init', function () {
         add_action('admin_notices', function () {
             echo '<div class="notice notice-error"><p><strong>Trafficontent:</strong> Please use the Connect button to register the site.</p></div>';
         });
+    }
+});
+// Redirect to welcome/setup page after activation
+register_activation_hook(__FILE__, function () {
+    delete_option('trafficontent_channel_id');
+    delete_option('trafficontent_consent_given');
+    delete_option('trafficontent_do_activation_redirect');
+    update_option('trafficontent_do_activation_redirect', true);
+    // Force UI cleanup flag for JS
+    update_option('trafficontent_ui_reset_needed', true);
+});
+
+add_action('admin_init', function () {
+    // UI cleanup after reactivation
+    if (get_option('trafficontent_ui_reset_needed')) {
+        delete_option('trafficontent_ui_reset_needed');
+        add_action('admin_footer', function () {
+            echo "<script>localStorage.removeItem('trafficontent_channel_synced');</script>";
+        });
+    }
+    if (get_option('trafficontent_do_activation_redirect', false)) {
+        delete_option('trafficontent_do_activation_redirect');
+        if (!isset($_GET['activate-multi'])) {
+            wp_safe_redirect(admin_url('admin.php?page=trafficontent-welcome'));
+            exit;
+        }
     }
 });
