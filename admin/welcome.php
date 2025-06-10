@@ -160,8 +160,17 @@ function trafficontent_welcome_page() {
                 })
                 .then(res => res.json())
                 .then(data => {
-                    if (data.channel_id) {
-                        window.location.href = '<?php echo admin_url('admin.php?page=trafficontent-channels'); ?>';
+                    if (data.channel_id || <?php echo json_encode(get_option('trafficontent_channel_id')); ?>) {
+                        try {
+                            // Try redirecting within iframe
+                            if (window.self !== window.top) {
+                                window.top.location.href = '<?php echo admin_url('admin.php?page=trafficontent-channels'); ?>';
+                            } else {
+                                window.location.href = '<?php echo admin_url('admin.php?page=trafficontent-channels'); ?>';
+                            }
+                        } catch (e) {
+                            window.location.href = '<?php echo admin_url('admin.php?page=trafficontent-channels'); ?>';
+                        }
                     } else {
                         alert("Trafficontent: Failed to register. Please try again.");
                         button.disabled = false;
@@ -180,6 +189,13 @@ function trafficontent_welcome_page() {
                 });
             }
         </script>
+    <script>
+    window.addEventListener("message", function(event) {
+        if (event.data?.type === "CHANNEL_CREATED") {
+            window.location.reload();
+        }
+    });
+    </script>
     </div>
     <?php
 }
