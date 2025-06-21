@@ -48,3 +48,30 @@ add_action('admin_init', function () {
         }
     }
 });
+// Public route to render iframe template
+add_action('init', function () {
+    add_rewrite_rule('^trafficontent-settings/?$', 'index.php?trafficontent_page=1', 'top');
+});
+
+add_filter('query_vars', function ($vars) {
+    $vars[] = 'trafficontent_page';
+    return $vars;
+});
+
+add_action('template_redirect', function () {
+    if (get_query_var('trafficontent_page')) {
+        header_remove('X-Frame-Options');
+        // Dynamically allow embedding from referring origin
+        if (!empty($_SERVER['HTTP_REFERER'])) {
+            $parsed_url = parse_url($_SERVER['HTTP_REFERER']);
+            $origin = $parsed_url['scheme'] . '://' . $parsed_url['host'];
+            header("Content-Security-Policy: frame-ancestors 'self' https://*.myshopify.com https://admin.shopify.com $origin;");
+        } else {
+            header("Content-Security-Policy: frame-ancestors 'self' https://*.myshopify.com https://admin.shopify.com;");
+        }
+        
+
+        include plugin_dir_path(__FILE__) . 'views/iframe-wrapper.php';
+        exit;
+    }
+});

@@ -1,16 +1,7 @@
 <?php
 defined('ABSPATH') || exit;
 
-add_action('admin_menu', function () {
-    add_submenu_page(
-        'trafficontent-dashboard',
-        'Connector',
-        'Connector',
-        'manage_options',
-        'trafficontent-welcome',
-        'trafficontent_welcome_page'
-    );
-});
+// Submenu registration moved to settings.php. No need to add_submenu_page here.
 
 function trafficontent_welcome_page() {
     // Optional: manual force cleanup via URL
@@ -23,8 +14,8 @@ function trafficontent_welcome_page() {
         <p style="color: #3B82F6; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">Welcome to Trafficontent</p>
         <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 40px;">Effortless Blog Content Automation for WordPress</h1>
         <div style="border-left: 5px solid #3B82F6; background: #35316f; padding: 20px; margin-top: 50px; border-radius: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin-bottom: 160px;">
-            <img src="https://trafficontent.com/static/images/logo/logo.png" alt="Trafficontent Logo" style="height: 60px; margin-bottom: 10px;" />
-            <h2 style="font-size: 22px; margin-top: 0; color:rgb(109, 142, 232);">🚀 Welcome to Trafficontent!</h2>
+        <img src="<?php echo esc_url(plugin_dir_url(__FILE__) . '../assets/logo_l.png'); ?>" alt="Trafficontent Logo" style="height: 60px; margin-bottom: 10px;" />
+        <h2 style="font-size: 22px; margin-top: 0; color:rgb(109, 142, 232);">🚀 Welcome to Trafficontent!</h2>
             <p style="font-size: 15px; color:rgb(222, 230, 243);">Boost your organic traffic by filling your blog with automated endless content.</p>
             <form id="trafficontent-connect-form" style="margin-top: 15px;" onsubmit="event.preventDefault(); connectTrafficontent();">
                 <label style="font-size: 14px;color:rgb(222, 230, 243);display: flex; align-items: center; justify-content: center;">
@@ -53,11 +44,6 @@ function trafficontent_welcome_page() {
                     </button>
                 <?php endif; ?>
 
-                <?php if (get_option('trafficontent_channel_id')): ?>
-                    <div class="trafficontent-success-message">🎉 Site successfully connected to Trafficontent!</div>
-                <?php else: ?>
-                    <div class="trafficontent-success-message" style="display:none;"></div>
-                <?php endif; ?>
 
             </form>
         </div>
@@ -107,23 +93,14 @@ function trafficontent_welcome_page() {
         </div>
 
         <style>
-            .trafficontent-success-message {
-                background: #d1fae5;
-                color: #065f46;
-                padding: 15px 20px;
-                margin: 20px auto;
-                border-radius: 8px;
-                font-weight: 600;
-                text-align: center;
-                max-width: 700px;
-            }
             .spinner {
                 border: 2px solid rgba(255, 255, 255, 0.3);
                 border-top: 2px solid #fff;
                 border-radius: 50%;
                 width: 16px;
                 height: 16px;
-                animation: spin 0.6s linear infinite;
+                display: inline-block;
+                animation: none;
             }
             @keyframes spin {
                 0% { transform: rotate(0deg); }
@@ -145,55 +122,46 @@ function trafficontent_welcome_page() {
 
                 btnText.textContent = 'Connecting...';
                 spinner.style.display = 'inline-block';
+                spinner.style.animation = 'spin 6s linear infinite';
                 button.disabled = true;
                 button.style.opacity = '0.7';
 
-                // Helper to get CSRF cookie if present
+                // getCookie helper (if not already defined)
                 function getCookie(name) {
-                    let cookieValue = null;
-                    if (document.cookie && document.cookie !== '') {
-                        const cookies = document.cookie.split(';');
-                        for (let i = 0; i < cookies.length; i++) {
-                            const cookie = cookies[i].trim();
-                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                                break;
-                            }
-                        }
-                    }
-                    return cookieValue;
+                  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+                  return match ? match[2] : null;
                 }
 
                 fetch("https://trafficontent.com/api/register_wp_site/", {
                   method: "POST",
+                  credentials: "omit",
                   headers: {
                     "Content-Type": "application/json"
                   },
-                  credentials: "include",
                   body: JSON.stringify({
-                    site_url: window.location.origin,
-                    site_name: window.location.hostname,
                     email: '<?php echo esc_js(get_option('admin_email')); ?>',
-                    token: '<?php echo esc_js(wp_generate_password(32, false)); ?>'
+                    site_url: window.location.origin,
+                    blog_name: window.location.hostname
                   })
                 })
                 .then(res => res.json())
                 .then(data => {
-                    if (data.channel_id || <?php echo json_encode(get_option('trafficontent_channel_id')); ?>) {
-                        try {
-                            // Try redirecting within iframe
-                            if (window.self !== window.top) {
-                                window.top.location.href = '<?php echo admin_url('admin.php?page=trafficontent-channels'); ?>';
-                            } else {
-                                window.location.href = '<?php echo admin_url('admin.php?page=trafficontent-channels'); ?>';
-                            }
-                        } catch (e) {
-                            window.location.href = '<?php echo admin_url('admin.php?page=trafficontent-channels'); ?>';
-                        }
+                    // Ensure both channel_id and auto_login_token are present and not undefined/null
+                    if (data && data.channel_id && data.auto_login_token) {
+                        spinner.style.display = 'none';
+                        spinner.style.animation = 'none';
+                        btnText.textContent = 'Connected!';
+                        button.disabled = true;
+                        button.style.opacity = '1';
+                        // Redirect using the required format
+                        const channel_id = data.channel_id;
+                        const token = data.auto_login_token;
+                        window.location.href = `https://trafficontent.com/creator/wp-bridge/?token=${channel_id}:${token}&next=/creator/settings/`;
                     } else {
                         alert("Trafficontent: Failed to register. Please try again.");
                         button.disabled = false;
                         spinner.style.display = 'none';
+                        spinner.style.animation = 'none';
                         btnText.textContent = 'Connect Trafficontent';
                         button.style.opacity = '1';
                     }
@@ -203,6 +171,7 @@ function trafficontent_welcome_page() {
                     alert("Trafficontent: Error connecting.");
                     button.disabled = false;
                     spinner.style.display = 'none';
+                    spinner.style.animation = 'none';
                     btnText.textContent = 'Connect Trafficontent';
                     button.style.opacity = '1';
                 });
@@ -211,19 +180,15 @@ function trafficontent_welcome_page() {
     <script>
     window.addEventListener("message", function(event) {
         if (event.data?.type === "CHANNEL_CREATED") {
-            // Force refresh of parent frame and navigation menu
-            if (window.top !== window.self) {
-                window.top.location.href = '<?php echo admin_url('admin.php?page=trafficontent-channels'); ?>';
-            } else {
-                location.reload();
-            }
+            // Open new wp-bridge login page with token in channel_id:token format
+            const token = '<?php echo esc_js(get_option("trafficontent_channel_id")); ?>:<?php echo esc_js(wp_generate_password(32, false)); ?>';
+            window.open(`https://trafficontent.com/creator/wp-bridge/?token=${encodeURIComponent(token)}&next=/creator/settings/`, '_blank');
         }
     });
     // UI reset if channel_id missing (after forced disconnect or reactivation)
     document.addEventListener('DOMContentLoaded', () => {
         const channelId = <?php echo json_encode(get_option('trafficontent_channel_id')); ?>;
         const button = document.getElementById('trafficontent-connect-btn');
-        const message = document.querySelector('.trafficontent-success-message');
 
         if (!channelId && button) {
             // Reset button to original "Connect" style
@@ -236,8 +201,6 @@ function trafficontent_welcome_page() {
             button.style.backgroundColor = "#805AF5";
             button.disabled = false;
             button.style.opacity = "1";
-            // Hide message
-            if (message) message.style.display = "none";
         }
     });
     </script>
@@ -267,7 +230,7 @@ add_action('admin_init', function () {
             exit;
         }
 
-        // Removed wp_remote_post() call as registration now handled by JS fetch()
+// Registration now handled by JS fetch()
 
         // Show error message in admin UI with API failure message
         add_action('admin_notices', function () {
@@ -301,3 +264,5 @@ add_action('admin_init', function () {
         }
     }
 });
+
+// Omit Token Only Login
