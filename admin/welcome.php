@@ -109,74 +109,75 @@ function trafficontent_welcome_page() {
         </style>
 
         <script>
-            function connectTrafficontent() {
-                const checkbox = document.getElementById('trafficontent_agree');
-                if (!checkbox.checked) {
-                    alert('Please check the box to continue.');
-                    return;
-                }
+document.addEventListener("DOMContentLoaded", function () {
+    window.connectTrafficontent = function () {
+        const checkbox = document.getElementById('trafficontent_agree');
+        if (!checkbox.checked) {
+            alert('Please check the box to continue.');
+            return;
+        }
 
-                const button = document.getElementById('trafficontent-connect-btn');
-                const spinner = button.querySelector('.spinner');
-                const btnText = button.querySelector('.btn-text');
+        const button = document.getElementById('trafficontent-connect-btn');
+        const spinner = button.querySelector('.spinner');
+        const btnText = button.querySelector('.btn-text');
 
-                btnText.textContent = 'Connecting...';
-                spinner.style.display = 'inline-block';
-                spinner.style.animation = 'spin 6s linear infinite';
+        btnText.textContent = 'Connecting...';
+        spinner.style.display = 'inline-block';
+        spinner.style.animation = 'spin 6s linear infinite';
+        button.disabled = true;
+        button.style.opacity = '0.7';
+
+        // getCookie helper (if not already defined)
+        function getCookie(name) {
+          const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+          return match ? match[2] : null;
+        }
+
+        fetch("https://trafficontent.com/api/register_wp_site/", {
+          method: "POST",
+          credentials: "omit",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: '<?php echo esc_js(get_option('admin_email')); ?>',
+            site_url: window.location.origin,
+            blog_name: window.location.hostname,
+            access_token: '<?php echo esc_js(get_option("trafficontent_access_token") ?: wp_generate_password(24, false)); ?>'
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.channel_id && data.auto_login_token) {
+                spinner.style.display = 'none';
+                spinner.style.animation = 'none';
+                btnText.textContent = 'Connected!';
                 button.disabled = true;
-                button.style.opacity = '0.7';
-
-                // getCookie helper (if not already defined)
-                function getCookie(name) {
-                  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-                  return match ? match[2] : null;
-                }
-
-                fetch("https://trafficontent.com/api/register_wp_site/", {
-                  method: "POST",
-                  credentials: "omit",
-                  headers: {
-                    "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify({
-                    email: '<?php echo esc_js(get_option('admin_email')); ?>',
-                    site_url: window.location.origin,
-                    blog_name: window.location.hostname
-                  })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    // Ensure both channel_id and auto_login_token are present and not undefined/null
-                    if (data && data.channel_id && data.auto_login_token) {
-                        spinner.style.display = 'none';
-                        spinner.style.animation = 'none';
-                        btnText.textContent = 'Connected!';
-                        button.disabled = true;
-                        button.style.opacity = '1';
-                        // Redirect using the required format
-                        const channel_id = data.channel_id;
-                        const token = data.auto_login_token;
-                        window.location.href = `https://trafficontent.com/creator/wp-bridge/?token=${channel_id}:${token}&next=/creator/settings/`;
-                    } else {
-                        alert("Trafficontent: Failed to register. Please try again.");
-                        button.disabled = false;
-                        spinner.style.display = 'none';
-                        spinner.style.animation = 'none';
-                        btnText.textContent = 'Connect Trafficontent';
-                        button.style.opacity = '1';
-                    }
-                })
-                .catch(err => {
-                    console.error('Trafficontent: Error connecting.', err);
-                    alert("Trafficontent: Error connecting.");
-                    button.disabled = false;
-                    spinner.style.display = 'none';
-                    spinner.style.animation = 'none';
-                    btnText.textContent = 'Connect Trafficontent';
-                    button.style.opacity = '1';
-                });
+                button.style.opacity = '1';
+                const channel_id = data.channel_id;
+                const token = data.auto_login_token;
+                window.location.href = `https://trafficontent.com/creator/wp-bridge/?token=${channel_id}:${token}&next=/creator/settings/`;
+            } else {
+                alert("Trafficontent: Failed to register. Please try again.");
+                button.disabled = false;
+                spinner.style.display = 'none';
+                spinner.style.animation = 'none';
+                btnText.textContent = 'Connect Trafficontent';
+                button.style.opacity = '1';
             }
-        </script>
+        })
+        .catch(err => {
+            console.error('Trafficontent: Error connecting.', err);
+            alert("Trafficontent: Error connecting.");
+            button.disabled = false;
+            spinner.style.display = 'none';
+            spinner.style.animation = 'none';
+            btnText.textContent = 'Connect Trafficontent';
+            button.style.opacity = '1';
+        });
+    };
+});
+</script>
     <script>
     window.addEventListener("message", function(event) {
         if (event.data?.type === "CHANNEL_CREATED") {
