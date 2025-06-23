@@ -133,48 +133,53 @@ document.addEventListener("DOMContentLoaded", function () {
           return match ? match[2] : null;
         }
 
-        fetch("https://trafficontent.com/api/register_wp_site/", {
-          method: "POST",
-          credentials: "omit",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email: '<?php echo esc_js(get_option('admin_email')); ?>',
-            site_url: window.location.origin,
-            blog_name: window.location.hostname,
-            access_token: '<?php echo esc_js(get_option("trafficontent_access_token") ?: wp_generate_password(24, false)); ?>'
-          })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data && data.channel_id && data.auto_login_token) {
-                spinner.style.display = 'none';
-                spinner.style.animation = 'none';
-                btnText.textContent = 'Connected!';
-                button.disabled = true;
-                button.style.opacity = '1';
-                const channel_id = data.channel_id;
-                const token = data.auto_login_token;
-                window.location.href = `https://trafficontent.com/creator/wp-bridge/?token=${channel_id}:${token}&next=/creator/settings/`;
-            } else {
-                alert("Trafficontent: Failed to register. Please try again.");
+        fetch("<?php echo admin_url('admin-ajax.php'); ?>?action=trafficontent_generate_token")
+          .then(res => res.json())
+          .then(tokenData => {
+            fetch("https://trafficontent.com/api/register_wp_site/", {
+              method: "POST",
+              credentials: "omit",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                email: '<?php echo esc_js(get_option('admin_email')); ?>',
+                site_url: window.location.origin,
+                blog_name: window.location.hostname,
+                username: tokenData.username,
+                app_password: tokenData.password
+              })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.channel_id && data.auto_login_token) {
+                    spinner.style.display = 'none';
+                    spinner.style.animation = 'none';
+                    btnText.textContent = 'Connected!';
+                    button.disabled = true;
+                    button.style.opacity = '1';
+                    const channel_id = data.channel_id;
+                    const token = data.auto_login_token;
+                    window.location.href = `https://trafficontent.com/creator/wp-bridge/?token=${channel_id}:${token}&next=/creator/settings/`;
+                } else {
+                    alert("Trafficontent: Failed to register. Please try again.");
+                    button.disabled = false;
+                    spinner.style.display = 'none';
+                    spinner.style.animation = 'none';
+                    btnText.textContent = 'Connect Trafficontent';
+                    button.style.opacity = '1';
+                }
+            })
+            .catch(err => {
+                console.error('Trafficontent: Error connecting.', err);
+                alert("Trafficontent: Error connecting.");
                 button.disabled = false;
                 spinner.style.display = 'none';
                 spinner.style.animation = 'none';
                 btnText.textContent = 'Connect Trafficontent';
                 button.style.opacity = '1';
-            }
-        })
-        .catch(err => {
-            console.error('Trafficontent: Error connecting.', err);
-            alert("Trafficontent: Error connecting.");
-            button.disabled = false;
-            spinner.style.display = 'none';
-            spinner.style.animation = 'none';
-            btnText.textContent = 'Connect Trafficontent';
-            button.style.opacity = '1';
-        });
+            });
+          });
     };
 });
 </script>
@@ -267,3 +272,24 @@ add_action('admin_init', function () {
 });
 
 // Omit Token Only Login
+
+add_action('wp_ajax_trafficontent_generate_token', function () {
+    $user = wp_get_current_user();
+    if (!$user || !$user->ID) {
+        wp_send_json_error('No valid user');
+    }
+    $app_password = null;
+    // Always create a new application password if not present
+    $generated = WP_Application_Passwords::create_new_application_password($user->ID, array('name' => 'Trafficontent Auto'));
+    if (is_array($generated)) {
+        $app_password = $generated[0];
+    }
+    // Save username and password to new options (not access_token)
+    update_option("trafficontent_api_key", $user->user_login);
+    update_option("trafficontent_api_password", $app_password);
+    wp_send_json([
+        'username' => $user->user_login,
+        'password' => $app_password,
+        'email' => $user->user_email
+    ]);
+});
