@@ -1,0 +1,133 @@
+.trafficontent-welcome-wrap {
+    max-width: 900px;
+    margin: 50px auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    text-align: center;
+}
+.trafficontent-welcome-header {
+    color: #3B82F6;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+.trafficontent-welcome-title {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 40px;
+}
+.trafficontent-welcome-box {
+    border-left: 5px solid #3B82F6;
+    background: #35316f;
+    padding: 20px;
+    margin-top: 50px;
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    margin-bottom: 160px;
+}
+.trafficontent-logo {
+    max-width: 200px;
+    margin-bottom: 30px;
+}
+.trafficontent-welcome-subtitle {
+    font-size: 22px;
+    margin-top: 0;
+    color: rgb(109, 142, 232);
+}
+.trafficontent-welcome-desc {
+    font-size: 15px;
+    color: rgb(222, 230, 243);
+}
+.trafficontent-connect-form {
+    margin-top: 15px;
+}
+.trafficontent-consent-label {
+    font-size: 14px;
+    color: rgb(222, 230, 243);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.trafficontent-consent-checkbox {
+    margin-right: 10px;
+}
+.trafficontent-connect-btn {
+    margin-top: 20px;
+    padding: 15px 40px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.3s ease;
+    transform: scale(1);
+}
+.trafficontent-connect-btn.button-primary {
+    background-color: #805AF5;
+    color: #fff;
+}
+.trafficontent-connect-btn.button-secondary {
+    background-color: #ccc;
+    color: #333;
+}
+.trafficontent-connect-btn.button-primary:hover,
+.trafficontent-connect-btn.button-secondary:hover {
+    transform: scale(1.05);
+}
+.trafficontent-connect-btn.button-primary:hover {
+    background-color: #6c45e0;
+}
+.trafficontent-connect-btn.button-secondary:hover {
+    background-color: #bbb;
+}
+.trafficontent-connect-btn:active {
+    transform: scale(0.98);
+}
+.trafficontent-connect-btn .dashicons {
+    vertical-align: middle;
+    margin-right: 6px;
+}
+.trafficontent-connect-btn.button-primary .dashicons {
+    color: #fff;
+}
+.spinner {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #fff;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: none;
+    margin-left: 10px;
+    vertical-align: middle;
+    animation: none;
+}
+.spinner.active {
+    display: inline-block;
+    animation: spin 0.6s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.trafficontent-features {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-bottom: 50px;
+}
+.trafficontent-feature {
+    flex: 1 1 200px;
+}
+.trafficontent-feature .dashicons {
+    font-size: 40px;
+    color: #3B82F6;
+}
+.trafficontent-feature h3 {
+    font-size: 18px;
+    color: #1d4ed8;
+    margin-bottom: 10px;
+}
+.trafficontent-feature p {
+    margin: 0 auto;
+    max-width: 250px;
+    line-height: 1.5;
+}
